@@ -21,7 +21,7 @@ class AdminController {
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const result = await admin.create({
-        name,       
+        name,
         email,
         password: hashedPassword,
       });
@@ -54,6 +54,7 @@ class AdminController {
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: 3600000,
       });
       res.status(200).json({ message: "Admin logged in successfully", token });
@@ -85,7 +86,7 @@ class AdminController {
         });
       }
 
-      return res.status(200).json({adminData});
+      return res.status(200).json({ adminData });
 
     } catch (error) {
 
@@ -130,10 +131,10 @@ class AdminController {
         return res.status(400).json({ message: "Password does not match" });
       }
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      const updatedAdmin = await admin.findByIdAndUpdate( req.admin.id,
-          { password: hashedPassword },
-          { new: true },
-        )
+      const updatedAdmin = await admin.findByIdAndUpdate(req.admin.id,
+        { password: hashedPassword },
+        { new: true },
+      )
         .select("-password");
       res.status(200).json(updatedAdmin);
     } catch (error) {
