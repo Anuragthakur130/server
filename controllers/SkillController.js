@@ -1,4 +1,4 @@
-const skill = require("../models/Skill");
+const skill = require("../models/skill");
 
 class SkillController {
 
