@@ -16,7 +16,7 @@ class AdminController {
     try {
       const { name, email, password } = req.body;
       const adminExists = await admin.findOne({ email });
-      if (adminExists) {
+      if (adminExists) {        
         return res.status(400).json({ message: "Admin already exists" });
       }
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,7 +25,7 @@ class AdminController {
         email,
         password: hashedPassword,
       });
-      res
+      res 
         .status(201)
         .json({ message: "Admin registered successfully", result });
     } catch (error) {
@@ -73,7 +73,7 @@ class AdminController {
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
-
+    
   static getProfile = async (req, res) => {
     try {
 

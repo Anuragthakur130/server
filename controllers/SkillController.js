@@ -8,6 +8,7 @@ class SkillController {
             const { name, percentage, icon } = req.body;
             if (!name || !percentage || !icon) {
                 return res.status(400).json({ message: "All fields are required" });
+                
             }
             const result = new skill({
                 name,

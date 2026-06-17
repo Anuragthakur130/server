@@ -13,7 +13,7 @@ class HeroController {
 
     static createHero = async (req, res) => {
         try {
-            // ================= VALIDATION =================   
+            // ================= VALIDATION =================    
             const { subtitle, name, description, resumeLink, github, linkedin, instagram, frontendTitle, backendTitle } = req.body
 
             if (!subtitle || !name || !description || !resumeLink || !github || !linkedin || !instagram || !frontendTitle || !backendTitle) {
@@ -208,17 +208,17 @@ class HeroController {
             }
 
             // ===============================
-            // TEXT FIELD UPDATE
+            // TEXT FIELD UPDATE (only update if value provided)
             // ===============================
-            hero.subtitle = subtitle
-            hero.name = name
-            hero.description = description
-            hero.resumeLink = resumeLink
-            hero.github = github
-            hero.linkedin = linkedin
-            hero.instagram = instagram
-            hero.frontendTitle = frontendTitle
-            hero.backendTitle = backendTitle
+            if (subtitle)       hero.subtitle = subtitle
+            if (name)           hero.name = name
+            if (description)    hero.description = description
+            if (resumeLink)     hero.resumeLink = resumeLink
+            if (github)         hero.github = github
+            if (linkedin)       hero.linkedin = linkedin
+            if (instagram)      hero.instagram = instagram
+            if (frontendTitle)  hero.frontendTitle = frontendTitle
+            if (backendTitle)   hero.backendTitle = backendTitle
 
             // Save all updates
             await hero.save()

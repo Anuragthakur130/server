@@ -23,6 +23,7 @@ const heroSchema = new mongoose.Schema({
     },
     resumeLink: {
         type: String,
+        require:true,
     },
     github: {
         type: String,
