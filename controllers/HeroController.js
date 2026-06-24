@@ -39,7 +39,7 @@ class HeroController {
                 file.tempFilePath,
                 {
                     folder: 'portfolio_hero',
-                    resource_type: "image"
+                    resource_type: "auto"
                 }
             )
             console.log(uploadResult)
@@ -142,7 +142,7 @@ class HeroController {
                 success: true,
                 message: 'Hero deleted successfully'
             })
-
+   
         } catch (error) {
             res.status(500).json({
                 success: false,
@@ -195,7 +195,7 @@ class HeroController {
                     file.tempFilePath,
                     {
                         folder: 'portfolio_hero',
-                        resource_type: 'image'
+                        resource_type: 'auto'
                     }
                 )
 
@@ -205,6 +205,28 @@ class HeroController {
                 // Save new image
                 hero.profileImage = uploadResult.secure_url
                 hero.public_id = uploadResult.public_id
+            }
+
+            // ===============================
+            // RESUME FILE UPDATE
+            // ===============================
+            if (req.files && req.files.resumeFile) {
+                const file = req.files.resumeFile
+
+                // Upload new resume
+                const uploadResult = await cloudinary.uploader.upload(
+                    file.tempFilePath,
+                    {
+                        folder: 'portfolio_resume',
+                        resource_type: 'auto'
+                    }
+                )
+
+                // Remove temp file
+                fs.unlinkSync(file.tempFilePath)
+
+                // Save new resume link
+                hero.resumeLink = uploadResult.secure_url
             }
 
             // ===============================

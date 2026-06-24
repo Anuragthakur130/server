@@ -32,7 +32,7 @@ router.delete("/deleteSkill/:id", auth, SkillController.deleteSkill);
 
 
 // project routes
- router.post("/createproject", ProjectController.createProject);
+router.post("/createProject", auth, ProjectController.createProject);
 router.get("/getAllProjects", ProjectController.getAllProjects);
 router.get("/getSingleProject/:id", auth, ProjectController.getSingleProject);
 router.put("/updateProject/:id", auth, ProjectController.updateProject);
@@ -56,9 +56,9 @@ router.delete("/deleteAbout/:id", AboutController.deleteAbout);
 
 
 // service routes
-router.post('/createservice', ServiceController.createService)
+router.post('/createservice', auth, ServiceController.createService)
 router.get('/getAllServices', ServiceController.getServices)
-router.put('/updateService/:id', ServiceController.updateService)
-router.delete('/deleteService/:id', ServiceController.deleteService)
+router.put('/updateService/:id', auth, ServiceController.updateService)
+router.delete('/deleteService/:id', auth, ServiceController.deleteService)
 
 module.exports = router;

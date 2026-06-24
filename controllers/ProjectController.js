@@ -13,8 +13,6 @@ cloudinary.config({
 class ProjectController {
     static createProject = async (req, res) => {
         try {
-            // console.log(req.body);
-            // console.log(req.files)
             const { title, description, liveLink, githubLink, technologies } = req.body;
             if (!title || !description || !liveLink || !githubLink || !technologies) {
                 return res.status(400).json({
@@ -27,20 +25,26 @@ class ProjectController {
                 })
             }
             const projectImage = req.files.image;
-            console.log(projectImage);
 
             const uploadResult = await cloudinary.uploader.upload(projectImage.tempFilePath, {
                 folder: "projects",
             });
-            // console.log(uploadResult);
             fs.unlinkSync(projectImage.tempFilePath);
+
+            // Handle comma-separated string from frontend or JSON array
+            let parsedTechnologies = [];
+            try {
+                parsedTechnologies = JSON.parse(technologies);
+            } catch(e) {
+                parsedTechnologies = typeof technologies === 'string' ? technologies.split(',').map(t => t.trim()).filter(Boolean) : technologies;
+            }
 
             const result = await Project.create({
                 title,
                 description,
                 liveLink,
                 githubLink,
-                technologies: JSON.parse(technologies),
+                technologies: parsedTechnologies,
                 image: uploadResult.secure_url,
                 public_id: uploadResult.public_id,
             });
@@ -51,7 +55,7 @@ class ProjectController {
         }
         catch (error) {
             console.log(error);
-
+            res.status(500).json({ message: "Internal server error", error: error.message });
         }
     }
 
@@ -66,6 +70,7 @@ class ProjectController {
         }
         catch (error) {
             console.log(error);
+            res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -86,6 +91,7 @@ class ProjectController {
         }
         catch (error) {
             console.log(error);
+            res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -102,7 +108,9 @@ class ProjectController {
             }
             // if user send image old image delete
             if (req.files && req.files.image) {
-                await cloudinary.uploader.destroy(project.public_id);
+                if (project.public_id) {
+                    await cloudinary.uploader.destroy(project.public_id);
+                }
                 const projectImage = req.files.image;
                 const uploadResult = await cloudinary.uploader.upload(projectImage.tempFilePath, {
                     folder: "projects",
@@ -111,21 +119,32 @@ class ProjectController {
                 project.image = uploadResult.secure_url;
                 project.public_id = uploadResult.public_id;
             }
-            project.title = title;
-            project.description = description;
-            project.liveLink = liveLink;
-            project.githubLink = githubLink;
-            project.technologies = technologies;
+
+            // Handle comma-separated string from frontend or JSON array
+            let parsedTechnologies = project.technologies;
+            if (technologies) {
+                try {
+                    parsedTechnologies = JSON.parse(technologies);
+                } catch(e) {
+                    parsedTechnologies = typeof technologies === 'string' ? technologies.split(',').map(t => t.trim()).filter(Boolean) : technologies;
+                }
+            }
+
+            if(title) project.title = title;
+            if(description) project.description = description;
+            if(liveLink) project.liveLink = liveLink;
+            if(githubLink) project.githubLink = githubLink;
+            if(technologies) project.technologies = parsedTechnologies;
+
             await project.save();
             res.status(200).json({
                 message: "Project updated successfully",
                 project,
             });
-
-
         }
         catch (error) {
             console.log(error);
+            res.status(500).json({ message: "Internal server error", error: error.message });
         }
     }
 
@@ -139,7 +158,9 @@ class ProjectController {
                     message: "Project not found",
                 });
             }
-            await cloudinary.uploader.destroy(project.public_id);
+            if (project.public_id) {
+                await cloudinary.uploader.destroy(project.public_id);
+            }
             await project.deleteOne();
             res.status(200).json({
                 message: "Project deleted successfully",
@@ -147,6 +168,7 @@ class ProjectController {
         }
         catch (error) {
             console.log(error);
+            res.status(500).json({ message: "Internal server error" });
         }
     }
 
